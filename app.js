@@ -44,93 +44,106 @@ document.addEventListener('DOMContentLoaded', () => {
   const timerSeconds = document.getElementById('timerSeconds');
   const timerProgressCircle = document.getElementById('timerProgressCircle');
   const timerStatusText = document.getElementById('timerStatusText');
+  const toggleSoundBtn = document.getElementById('toggleSoundBtn');
+  const soundIconOn = document.getElementById('soundIconOn');
+  const soundIconOff = document.getElementById('soundIconOff');
 
   let timerInterval = null;
   let timerSecondsLeft = 10;
   let timerActiveQuestionIndex = -1;
+  let soundEnabled = true;
+  let audioCtx = null;
   const TOTAL_TIMER_SECONDS = 10;
   const CIRCLE_CIRCUMFERENCE = 263.89; // 2 * Math.PI * 42
 
-  // Navigation Buttons
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const submitQuizBtn = document.getElementById('submitQuizBtn');
+  // Web Audio Context initialization
+  function getAudioContext() {
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
 
-  // Modal Dialog Elements
-  const submitModal = document.getElementById('submitModal');
-  const modalAnsweredCount = document.getElementById('modalAnsweredCount');
-  const modalRemainingCount = document.getElementById('modalRemainingCount');
-  const modalCancelBtn = document.getElementById('modalCancelBtn');
-  const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+  // Play crisp mechanical clock tick
+  function playTickSound(isUrgent = false) {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
 
-  // Results Screen Elements
-  const resultPerformanceBadge = document.getElementById('resultPerformanceBadge');
-  const resultTitle = document.getElementById('resultTitle');
-  const resultMessage = document.getElementById('resultMessage');
-  const statPercentage = document.getElementById('statPercentage');
-  const statTotal = document.getElementById('statTotal');
-  const statCorrect = document.getElementById('statCorrect');
-  const statWrong = document.getElementById('statWrong');
-  const statUnanswered = document.getElementById('statUnanswered');
-  const restartQuizBtn = document.getElementById('restartQuizBtn');
-  const toggleReviewBtn = document.getElementById('toggleReviewBtn');
-  const reviewBtnText = document.getElementById('reviewBtnText');
-  const reviewSection = document.getElementById('reviewSection');
-  const reviewList = document.getElementById('reviewList');
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  const filterCorrectCount = document.getElementById('filterCorrectCount');
-  const filterWrongCount = document.getElementById('filterWrongCount');
-  const filterUnansweredCount = document.getElementById('filterUnansweredCount');
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
 
-  const optionLetters = ['A', 'B', 'C', 'D'];
+      osc.type = 'sine';
+      const freq = isUrgent ? 850 : 600;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.045);
 
-  // Initialize Question Palette
-  function initPalette() {
-    paletteGrid.innerHTML = '';
-    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'palette-btn';
-      btn.id = `palette-btn-${i}`;
-      btn.textContent = i + 1;
-      btn.setAttribute('aria-label', `Go to Question ${i + 1}`);
-      btn.addEventListener('click', () => {
-        goToQuestion(i);
-      });
-      paletteGrid.appendChild(btn);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.045);
+    } catch (e) {
+      // Audio autoplay handled gracefully
     }
   }
 
-  // Update Palette styling
-  function updatePalette() {
-    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
-      const btn = document.getElementById(`palette-btn-${i}`);
-      if (!btn) continue;
+  // Play gentle chime on time up
+  function playTimesUpSound() {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
 
-      btn.classList.remove('active', 'answered');
-      if (i === currentIndex) {
-        btn.classList.add('active');
-      }
-      if (userAnswers[i] !== null) {
-        btn.classList.add('answered');
-      }
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now); // C5
+      osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } catch (e) {
+      // Graceful fallback
     }
   }
 
-  // Update Progress Bar and Counter
-  function updateProgress() {
-    const qNum = currentIndex + 1;
-    questionCounter.textContent = `Question ${qNum} of ${TOTAL_QUESTIONS}`;
-    
-    // Progress calculation based on current question position
-    const percentage = Math.round((qNum / TOTAL_QUESTIONS) * 100);
-    progressPercentage.textContent = `${percentage}%`;
-    progressBarFill.style.width = `${percentage}%`;
-    progressBarAria.setAttribute('aria-valuenow', percentage);
-
-    // Answered statistics
-    const answeredCount = userAnswers.filter(ans => ans !== null).length;
-    answeredStats.textContent = `${answeredCount} of ${TOTAL_QUESTIONS} Answered`;
+  // Sound toggle button listener
+  if (toggleSoundBtn) {
+    toggleSoundBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      soundEnabled = !soundEnabled;
+      if (soundEnabled) {
+        if (soundIconOn) soundIconOn.style.display = 'block';
+        if (soundIconOff) soundIconOff.style.display = 'none';
+        toggleSoundBtn.classList.remove('muted');
+        toggleSoundBtn.setAttribute('title', 'Sound Enabled (Click to Mute)');
+        playTickSound(false);
+      } else {
+        if (soundIconOn) soundIconOn.style.display = 'none';
+        if (soundIconOff) soundIconOff.style.display = 'block';
+        toggleSoundBtn.classList.add('muted');
+        toggleSoundBtn.setAttribute('title', 'Sound Muted (Click to Unmute)');
+      }
+    });
   }
 
   // Start or reset 10-second timer for a question
@@ -151,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (questionTimer) questionTimer.classList.remove('hidden');
     updateTimerUI();
+    playTickSound(false);
 
     timerInterval = setInterval(() => {
       timerSecondsLeft--;
@@ -158,8 +172,12 @@ document.addEventListener('DOMContentLoaded', () => {
         timerSecondsLeft = 0;
         clearInterval(timerInterval);
         timerInterval = null;
+        updateTimerUI();
+        playTimesUpSound();
+      } else {
+        updateTimerUI();
+        playTickSound(timerSecondsLeft <= 3);
       }
-      updateTimerUI();
     }, 1000);
   }
 
