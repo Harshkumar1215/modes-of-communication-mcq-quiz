@@ -5,7 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const TOTAL_QUESTIONS = questionsData.length; // 50
-  
+
   // App State
   let currentIndex = 0;
   const userAnswers = new Array(TOTAL_QUESTIONS).fill(null);
@@ -39,181 +39,86 @@ document.addEventListener('DOMContentLoaded', () => {
   const correctAnswerLabel = document.getElementById('correctAnswerLabel');
   const explanationText = document.getElementById('explanationText');
 
-  // 10-Second Timer Elements & State
-  const questionTimer = document.getElementById('questionTimer');
-  const timerSeconds = document.getElementById('timerSeconds');
-  const timerProgressCircle = document.getElementById('timerProgressCircle');
-  const timerStatusText = document.getElementById('timerStatusText');
-  const toggleSoundBtn = document.getElementById('toggleSoundBtn');
-  const soundIconOn = document.getElementById('soundIconOn');
-  const soundIconOff = document.getElementById('soundIconOff');
+  // Navigation Buttons
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitQuizBtn = document.getElementById('submitQuizBtn');
 
-  let timerInterval = null;
-  let timerSecondsLeft = 10;
-  let timerActiveQuestionIndex = -1;
-  let soundEnabled = true;
-  let audioCtx = null;
-  const TOTAL_TIMER_SECONDS = 10;
-  const CIRCLE_CIRCUMFERENCE = 263.89; // 2 * Math.PI * 42
+  // Modal Dialog Elements
+  const submitModal = document.getElementById('submitModal');
+  const modalAnsweredCount = document.getElementById('modalAnsweredCount');
+  const modalRemainingCount = document.getElementById('modalRemainingCount');
+  const modalCancelBtn = document.getElementById('modalCancelBtn');
+  const modalConfirmBtn = document.getElementById('modalConfirmBtn');
 
-  // Web Audio Context initialization
-  function getAudioContext() {
-    if (!audioCtx) {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (AudioContextClass) {
-        audioCtx = new AudioContextClass();
+  // Results Screen Elements
+  const resultPerformanceBadge = document.getElementById('resultPerformanceBadge');
+  const resultTitle = document.getElementById('resultTitle');
+  const resultMessage = document.getElementById('resultMessage');
+  const statPercentage = document.getElementById('statPercentage');
+  const statTotal = document.getElementById('statTotal');
+  const statCorrect = document.getElementById('statCorrect');
+  const statWrong = document.getElementById('statWrong');
+  const statUnanswered = document.getElementById('statUnanswered');
+  const restartQuizBtn = document.getElementById('restartQuizBtn');
+  const toggleReviewBtn = document.getElementById('toggleReviewBtn');
+  const reviewBtnText = document.getElementById('reviewBtnText');
+  const reviewSection = document.getElementById('reviewSection');
+  const reviewList = document.getElementById('reviewList');
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const filterCorrectCount = document.getElementById('filterCorrectCount');
+  const filterWrongCount = document.getElementById('filterWrongCount');
+  const filterUnansweredCount = document.getElementById('filterUnansweredCount');
+
+  const optionLetters = ['A', 'B', 'C', 'D'];
+
+  // Initialize Question Palette
+  function initPalette() {
+    paletteGrid.innerHTML = '';
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'palette-btn';
+      btn.id = `palette-btn-${i}`;
+      btn.textContent = i + 1;
+      btn.setAttribute('aria-label', `Go to Question ${i + 1}`);
+      btn.addEventListener('click', () => {
+        goToQuestion(i);
+      });
+      paletteGrid.appendChild(btn);
+    }
+  }
+
+  // Update Palette styling
+  function updatePalette() {
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+      const btn = document.getElementById(`palette-btn-${i}`);
+      if (!btn) continue;
+
+      btn.classList.remove('active', 'answered');
+      if (i === currentIndex) {
+        btn.classList.add('active');
+      }
+      if (userAnswers[i] !== null) {
+        btn.classList.add('answered');
       }
     }
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    return audioCtx;
   }
 
-  // Play crisp mechanical clock tick
-  function playTickSound(isUrgent = false) {
-    if (!soundEnabled) return;
-    try {
-      const ctx = getAudioContext();
-      if (!ctx) return;
+  // Update Progress Bar and Counter
+  function updateProgress() {
+    const qNum = currentIndex + 1;
+    questionCounter.textContent = `Question ${qNum} of ${TOTAL_QUESTIONS}`;
 
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+    // Progress calculation based on current question position
+    const percentage = Math.round((qNum / TOTAL_QUESTIONS) * 100);
+    progressPercentage.textContent = `${percentage}%`;
+    progressBarFill.style.width = `${percentage}%`;
+    progressBarAria.setAttribute('aria-valuenow', percentage);
 
-      osc.type = 'sine';
-      const freq = isUrgent ? 850 : 600;
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.045);
-
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.045);
-    } catch (e) {
-      // Audio autoplay handled gracefully
-    }
-  }
-
-  // Play gentle chime on time up
-  function playTimesUpSound() {
-    if (!soundEnabled) return;
-    try {
-      const ctx = getAudioContext();
-      if (!ctx) return;
-
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(523.25, now); // C5
-      osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.4);
-    } catch (e) {
-      // Graceful fallback
-    }
-  }
-
-  // Sound toggle button listener
-  if (toggleSoundBtn) {
-    toggleSoundBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      soundEnabled = !soundEnabled;
-      if (soundEnabled) {
-        if (soundIconOn) soundIconOn.style.display = 'block';
-        if (soundIconOff) soundIconOff.style.display = 'none';
-        toggleSoundBtn.classList.remove('muted');
-        toggleSoundBtn.setAttribute('title', 'Sound Enabled (Click to Mute)');
-        playTickSound(false);
-      } else {
-        if (soundIconOn) soundIconOn.style.display = 'none';
-        if (soundIconOff) soundIconOff.style.display = 'block';
-        toggleSoundBtn.classList.add('muted');
-        toggleSoundBtn.setAttribute('title', 'Sound Muted (Click to Unmute)');
-      }
-    });
-  }
-
-  // Start or reset 10-second timer for a question
-  function startQuestionTimer(questionIndex) {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
-
-    timerActiveQuestionIndex = questionIndex;
-    timerSecondsLeft = TOTAL_TIMER_SECONDS;
-
-    // If answer is revealed for this question, keep timer invisible
-    if (answerRevealed[questionIndex]) {
-      if (questionTimer) questionTimer.classList.add('hidden');
-      return;
-    }
-
-    if (questionTimer) questionTimer.classList.remove('hidden');
-    updateTimerUI();
-    playTickSound(false);
-
-    timerInterval = setInterval(() => {
-      timerSecondsLeft--;
-      if (timerSecondsLeft <= 0) {
-        timerSecondsLeft = 0;
-        clearInterval(timerInterval);
-        timerInterval = null;
-        updateTimerUI();
-        playTimesUpSound();
-      } else {
-        updateTimerUI();
-        playTickSound(timerSecondsLeft <= 3);
-      }
-    }, 1000);
-  }
-
-  // Stop running timer
-  function stopTimer() {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
-  }
-
-  // Update timer display & circular SVG progress ring
-  function updateTimerUI() {
-    if (!questionTimer || !timerSeconds || !timerProgressCircle) return;
-
-    timerSeconds.textContent = timerSecondsLeft;
-
-    // Calculate circular stroke offset (from 0 down to full circumference)
-    const progressFraction = (TOTAL_TIMER_SECONDS - timerSecondsLeft) / TOTAL_TIMER_SECONDS;
-    const offset = progressFraction * CIRCLE_CIRCUMFERENCE;
-    timerProgressCircle.style.strokeDashoffset = offset;
-
-    // Color and status styling based on remaining time
-    timerProgressCircle.classList.remove('warning', 'danger', 'stopped');
-    timerStatusText.classList.remove('time-up');
-
-    if (timerSecondsLeft > 4) {
-      timerStatusText.textContent = "⏱️ Think & Select Option";
-    } else if (timerSecondsLeft > 0) {
-      timerProgressCircle.classList.add('warning');
-      timerStatusText.textContent = "⚡ Hurry up! Select answer";
-    } else {
-      timerProgressCircle.classList.add('danger');
-      timerStatusText.classList.add('time-up');
-      timerStatusText.textContent = "🛑 Time's Up!";
-    }
+    // Answered statistics
+    const answeredCount = userAnswers.filter(ans => ans !== null).length;
+    answeredStats.textContent = `${answeredCount} of ${TOTAL_QUESTIONS} Answered`;
   }
 
   // Render Current Question
@@ -256,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="option-radio-dot"></span>
       `;
 
-      // Option Click Handler (Selecting option does NOT disturb the countdown)
+      // Option Click Handler
       optionItem.addEventListener('click', () => {
         selectOption(optIndex);
       });
@@ -272,15 +177,11 @@ document.addEventListener('DOMContentLoaded', () => {
       optionsContainer.appendChild(optionItem);
     });
 
-    // Update Show/Hide Answer button state & Timer visibility
+    // Update Show/Hide Answer button state
     if (isRevealed) {
       showAnswerBtn.classList.add('active');
       showAnswerBtnText.textContent = 'Hide Answer & Explanation';
       explanationContainer.classList.add('active');
-      
-      // Clock is invisible when Answer & Explanation is shown
-      if (questionTimer) questionTimer.classList.add('hidden');
-      stopTimer();
 
       const correctOptLetter = optionLetters[currentQ.correctAnswer];
       const correctOptText = currentQ.options[currentQ.correctAnswer];
@@ -290,14 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
       showAnswerBtn.classList.remove('active');
       showAnswerBtnText.textContent = 'Show Answer & Explanation';
       explanationContainer.classList.remove('active');
-
-      // Clock is visible when Answer & Explanation is not shown
-      if (questionTimer) questionTimer.classList.remove('hidden');
-      
-      // Start 10s timer if this is a newly visited question
-      if (timerActiveQuestionIndex !== currentIndex) {
-        startQuestionTimer(currentIndex);
-      }
     }
 
     // Navigation buttons state
@@ -312,25 +205,15 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePalette();
   }
 
-  // Select an Option (updates choice without restarting timer)
+  // Select an Option
   function selectOption(optIndex) {
     userAnswers[currentIndex] = optIndex;
     renderQuestion();
   }
 
-  // Toggle Answer & Explanation (hides clock when revealed)
+  // Toggle Answer & Explanation
   function toggleAnswer() {
-    const willBeRevealed = !answerRevealed[currentIndex];
-    answerRevealed[currentIndex] = willBeRevealed;
-
-    if (willBeRevealed) {
-      stopTimer();
-      if (questionTimer) questionTimer.classList.add('hidden');
-    } else {
-      if (questionTimer) questionTimer.classList.remove('hidden');
-      startQuestionTimer(currentIndex);
-    }
-
+    answerRevealed[currentIndex] = !answerRevealed[currentIndex];
     renderQuestion();
   }
 
@@ -385,7 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Calculate & Submit Quiz
   function submitQuiz() {
     closeSubmitModal();
-    stopTimer();
     isSubmitted = true;
 
     let correctCount = 0;
@@ -543,9 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Restart Quiz
   function restartQuiz() {
-    stopTimer();
     currentIndex = 0;
-    timerActiveQuestionIndex = -1;
     userAnswers.fill(null);
     answerRevealed.fill(false);
     isSubmitted = false;

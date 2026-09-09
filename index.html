@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MCQ Quiz — Modes of Communication | 50 Questions</title>
-  <meta name="description" content="Complete 50 MCQ Quiz on Modes of Communication: Simplex, Half-Duplex, and Full-Duplex with instant explanations, progress tracking, and detailed performance breakdown.">
-  
+  <meta name="description"
+    content="Complete 50 MCQ Quiz on Modes of Communication: Simplex, Half-Duplex, and Full-Duplex with instant explanations, progress tracking, and detailed performance breakdown.">
+
   <!-- Modern Typography Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
   <!-- App Header -->
   <header class="app-header">
     <div class="container">
       <div class="badge-header">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
@@ -28,7 +34,7 @@
       </div>
       <h1 class="header-title">MCQ Quiz — Modes of Communication</h1>
       <p class="header-subtitle">50 Questions | Simplex • Half-Duplex • Full-Duplex</p>
-      
+
       <div class="header-tools">
         <button id="toggleGuideBtn" class="btn-tool" type="button" aria-expanded="false" aria-controls="quickGuideCard">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -37,7 +43,8 @@
           </svg>
           Quick Concept Guide
         </button>
-        <button id="togglePaletteBtn" class="btn-tool" type="button" aria-expanded="false" aria-controls="questionPalette">
+        <button id="togglePaletteBtn" class="btn-tool" type="button" aria-expanded="false"
+          aria-controls="questionPalette">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -62,15 +69,18 @@
       <div class="cheatsheet-grid">
         <div class="cheat-item">
           <h4>1. Simplex Mode (A → B)</h4>
-          <p><strong>One-way only.</strong> One transmits, the other only receives. Examples: TV broadcast, keyboard to CPU, radio.</p>
+          <p><strong>One-way only.</strong> One transmits, the other only receives. Examples: TV broadcast, keyboard to
+            CPU, radio.</p>
         </div>
         <div class="cheat-item">
           <h4>2. Half-Duplex Mode (A → B or B → A)</h4>
-          <p><strong>Two-way, taking turns.</strong> Both can transmit & receive, but NOT simultaneously. Example: Walkie-talkie.</p>
+          <p><strong>Two-way, taking turns.</strong> Both can transmit & receive, but NOT simultaneously. Example:
+            Walkie-talkie.</p>
         </div>
         <div class="cheat-item">
           <h4>3. Full-Duplex Mode (A ⇄ B)</h4>
-          <p><strong>Two-way, simultaneously.</strong> Both can transmit and receive at the exact same time. Example: Telephone, video call.</p>
+          <p><strong>Two-way, simultaneously.</strong> Both can transmit and receive at the exact same time. Example:
+            Telephone, video call.</p>
         </div>
       </div>
     </div>
@@ -92,7 +102,7 @@
 
     <!-- Quiz Active State View -->
     <div id="quizActiveView">
-      
+
       <!-- Progress Bar & Question Counter -->
       <section class="progress-card" aria-label="Quiz Progress">
         <div class="progress-header">
@@ -103,7 +113,8 @@
             2%
           </span>
         </div>
-        <div class="progress-bar-container" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" id="progressBarAria">
+        <div class="progress-bar-container" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100"
+          id="progressBarAria">
           <div id="progressBarFill" class="progress-bar-fill" style="width: 2%;"></div>
         </div>
         <div class="quiz-quick-stats">
@@ -130,41 +141,6 @@
 
         <!-- Show Answer Button & Explanation -->
         <div class="answer-toggle-section">
-          <!-- 10-Second Question Timer -->
-          <div id="questionTimer" class="question-timer-card" aria-label="10 Second Question Timer">
-            <div class="timer-badge">
-              <div class="timer-badge-title">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-                <span>10s Timer</span>
-              </div>
-              <button id="toggleSoundBtn" class="btn-sound-toggle" type="button" title="Mute/Unmute Tick Sound" aria-label="Toggle Timer Sound">
-                <svg id="soundIconOn" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                </svg>
-                <svg id="soundIconOff" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                  <line x1="23" y1="9" x2="17" y2="15"></line>
-                  <line x1="17" y1="9" x2="23" y2="15"></line>
-                </svg>
-              </button>
-            </div>
-            <div class="timer-circle-wrapper">
-              <svg class="timer-svg" width="92" height="92" viewBox="0 0 100 100">
-                <circle class="timer-bg-circle" cx="50" cy="50" r="42"></circle>
-                <circle id="timerProgressCircle" class="timer-progress-circle" cx="50" cy="50" r="42"></circle>
-              </svg>
-              <div class="timer-content">
-                <span id="timerSeconds" class="timer-number">10</span>
-                <span class="timer-unit">SEC</span>
-              </div>
-            </div>
-            <div id="timerStatusText" class="timer-status-text">Think & Select Option</div>
-          </div>
-
           <button id="showAnswerBtn" class="btn-show-answer" type="button">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -224,9 +200,10 @@
       <div id="resultPerformanceBadge" class="result-header-badge performance-tier-excellent">
         Performance Evaluation
       </div>
-      
+
       <h2 id="resultTitle" class="result-title">Your Score: 45 / 50</h2>
-      <p id="resultMessage" class="result-message">Excellent! You have mastered the concepts of Simplex, Half-Duplex, and Full-Duplex communication modes.</p>
+      <p id="resultMessage" class="result-message">Excellent! You have mastered the concepts of Simplex, Half-Duplex,
+        and Full-Duplex communication modes.</p>
 
       <!-- Score Statistics Grid -->
       <div class="score-cards-grid">
@@ -281,10 +258,11 @@
             <button class="filter-btn active" data-filter="all">All (50)</button>
             <button class="filter-btn" data-filter="correct">Correct (<span id="filterCorrectCount">0</span>)</button>
             <button class="filter-btn" data-filter="wrong">Wrong (<span id="filterWrongCount">0</span>)</button>
-            <button class="filter-btn" data-filter="unanswered">Unanswered (<span id="filterUnansweredCount">0</span>)</button>
+            <button class="filter-btn" data-filter="unanswered">Unanswered (<span
+                id="filterUnansweredCount">0</span>)</button>
           </div>
         </div>
-        
+
         <div id="reviewList" class="review-list">
           <!-- 50 question review cards rendered via JavaScript -->
         </div>
@@ -330,4 +308,19 @@
   <script src="questions.js"></script>
   <script src="app.js"></script>
 </body>
+
+</html>
+
+<!-- Footer -->
+<footer class="app-footer">
+  <div class="container">
+    <p>Modes of Communication Interactive MCQ Quiz • 50 Comprehensive Questions</p>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="questions.js"></script>
+<script src="app.js"></script>
+</body>
+
 </html>
