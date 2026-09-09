@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCQ Quiz — Modes of Communication | 50 Questions</title>
+  <meta name="description" content="Complete 50 MCQ Quiz on Modes of Communication: Simplex, Half-Duplex, and Full-Duplex with instant explanations, progress tracking, and detailed performance breakdown.">
+  
+  <!-- Modern Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="container">
+      <div class="badge-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        Computer Networks & Data Communication
+      </div>
+      <h1 class="header-title">MCQ Quiz — Modes of Communication</h1>
+      <p class="header-subtitle">50 Questions | Simplex • Half-Duplex • Full-Duplex</p>
+      
+      <div class="header-tools">
+        <button id="toggleGuideBtn" class="btn-tool" type="button" aria-expanded="false" aria-controls="quickGuideCard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+          Quick Concept Guide
+        </button>
+        <button id="togglePaletteBtn" class="btn-tool" type="button" aria-expanded="false" aria-controls="questionPalette">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Question Palette (1–50)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container quiz-wrapper">
+
+    <!-- Quick Concept Guide Card -->
+    <div id="quickGuideCard" class="cheatsheet-card" role="region" aria-label="Concept Reference Guide">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="font-size: 0.95rem; color: var(--slate-900);">📚 Core Summary Reference:</strong>
+        <span style="font-size:0.75rem; color:var(--slate-500);">Quick Refresher</span>
+      </div>
+      <div class="cheatsheet-grid">
+        <div class="cheat-item">
+          <h4>1. Simplex Mode (A → B)</h4>
+          <p><strong>One-way only.</strong> One transmits, the other only receives. Examples: TV broadcast, keyboard to CPU, radio.</p>
+        </div>
+        <div class="cheat-item">
+          <h4>2. Half-Duplex Mode (A → B or B → A)</h4>
+          <p><strong>Two-way, taking turns.</strong> Both can transmit & receive, but NOT simultaneously. Example: Walkie-talkie.</p>
+        </div>
+        <div class="cheat-item">
+          <h4>3. Full-Duplex Mode (A ⇄ B)</h4>
+          <p><strong>Two-way, simultaneously.</strong> Both can transmit and receive at the exact same time. Example: Telephone, video call.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Palette Drawer -->
+    <section id="questionPalette" class="palette-container" aria-label="Question Navigation Palette">
+      <div class="palette-header">
+        <span class="palette-title">Jump to Question</span>
+        <div class="palette-legend">
+          <span class="legend-item"><span class="legend-dot current"></span> Current</span>
+          <span class="legend-item"><span class="legend-dot answered"></span> Answered</span>
+          <span class="legend-item"><span class="legend-dot unanswered"></span> Unanswered</span>
+        </div>
+      </div>
+      <div id="paletteGrid" class="palette-grid" role="group" aria-label="Question Numbers">
+        <!-- 50 buttons generated dynamically -->
+      </div>
+    </section>
+
+    <!-- Quiz Active State View -->
+    <div id="quizActiveView">
+      
+      <!-- Progress Bar & Question Counter -->
+      <section class="progress-card" aria-label="Quiz Progress">
+        <div class="progress-header">
+          <span id="questionCounter" class="question-counter-label">
+            Question 1 of 50
+          </span>
+          <span id="progressPercentage" class="progress-percentage">
+            2%
+          </span>
+        </div>
+        <div class="progress-bar-container" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" id="progressBarAria">
+          <div id="progressBarFill" class="progress-bar-fill" style="width: 2%;"></div>
+        </div>
+        <div class="quiz-quick-stats">
+          <span>Total: <strong>50 MCQs</strong></span>
+          <span id="answeredStats" class="answered-pill">0 of 50 Answered</span>
+        </div>
+      </section>
+
+      <!-- MCQ Card -->
+      <article id="mcqCard" class="mcq-card">
+        <div class="mcq-meta">
+          <span id="cardCategory" class="category-tag">Fundamentals</span>
+          <span id="cardQuestionNumber" class="question-index-tag">Question 1</span>
+        </div>
+
+        <h2 id="cardQuestionText" class="question-text">
+          How many basic modes of communication are commonly discussed in data communication?
+        </h2>
+
+        <!-- Options Container -->
+        <div id="optionsContainer" class="options-list" role="radiogroup" aria-label="Answer options">
+          <!-- Dynamic 4 Options (A, B, C, D) -->
+        </div>
+
+        <!-- Show Answer Button & Explanation -->
+        <div class="answer-toggle-section">
+          <button id="showAnswerBtn" class="btn-show-answer" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span id="showAnswerBtnText">Show Answer & Explanation</span>
+          </button>
+
+          <!-- Explanation Container (Hidden by default) -->
+          <div id="explanationContainer" class="explanation-box" aria-live="polite">
+            <div class="explanation-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              Correct Answer & Concept
+            </div>
+            <div id="correctAnswerLabel" class="correct-ans-highlight">
+              Correct Answer: B. 3
+            </div>
+            <p id="explanationText" class="explanation-text">
+              The three basic modes are Simplex, Half-Duplex, and Full-Duplex.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Navigation & Submission Bar -->
+      <nav class="nav-action-bar" aria-label="Quiz Navigation Controls">
+        <button id="prevBtn" class="btn-nav btn-secondary" type="button" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Previous
+        </button>
+
+        <button id="submitQuizBtn" class="btn-submit-quiz" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+          Submit Quiz
+        </button>
+
+        <button id="nextBtn" class="btn-nav btn-primary" type="button">
+          Next
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </nav>
+
+    </div>
+
+    <!-- Quiz Results Screen (Hidden initially) -->
+    <section id="resultsContainer" class="results-container" aria-label="Quiz Results Summary">
+      <div id="resultPerformanceBadge" class="result-header-badge performance-tier-excellent">
+        Performance Evaluation
+      </div>
+      
+      <h2 id="resultTitle" class="result-title">Your Score: 45 / 50</h2>
+      <p id="resultMessage" class="result-message">Excellent! You have mastered the concepts of Simplex, Half-Duplex, and Full-Duplex communication modes.</p>
+
+      <!-- Score Statistics Grid -->
+      <div class="score-cards-grid">
+        <div class="stat-box highlight">
+          <div id="statPercentage" class="stat-value">90%</div>
+          <div class="stat-label">Percentage</div>
+        </div>
+        <div class="stat-box">
+          <div id="statTotal" class="stat-value">50</div>
+          <div class="stat-label">Total Questions</div>
+        </div>
+        <div class="stat-box correct">
+          <div id="statCorrect" class="stat-value">45</div>
+          <div class="stat-label">Correct Answers</div>
+        </div>
+        <div class="stat-box wrong">
+          <div id="statWrong" class="stat-value">3</div>
+          <div class="stat-label">Wrong Answers</div>
+        </div>
+        <div class="stat-box unanswered">
+          <div id="statUnanswered" class="stat-value">2</div>
+          <div class="stat-label">Unanswered</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="result-actions">
+        <button id="restartQuizBtn" class="btn-restart" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Restart Quiz
+        </button>
+        <button id="toggleReviewBtn" class="btn-review" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span id="reviewBtnText">Review All 50 Questions</span>
+        </button>
+      </div>
+
+      <!-- Detailed Review of All 50 Questions -->
+      <div id="reviewSection" class="review-section">
+        <div class="review-controls">
+          <h3 class="review-heading">Comprehensive Answer Key & Review</h3>
+          <div class="review-filters">
+            <button class="filter-btn active" data-filter="all">All (50)</button>
+            <button class="filter-btn" data-filter="correct">Correct (<span id="filterCorrectCount">0</span>)</button>
+            <button class="filter-btn" data-filter="wrong">Wrong (<span id="filterWrongCount">0</span>)</button>
+            <button class="filter-btn" data-filter="unanswered">Unanswered (<span id="filterUnansweredCount">0</span>)</button>
+          </div>
+        </div>
+        
+        <div id="reviewList" class="review-list">
+          <!-- 50 question review cards rendered via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Submit Confirmation Modal Dialog -->
+  <div id="submitModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <div class="modal-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+      </div>
+      <h3 id="modalTitle" class="modal-title">Ready to Submit Quiz?</h3>
+      <p id="modalDesc" class="modal-desc">
+        You are about to submit your quiz and calculate your final score.
+      </p>
+
+      <div class="modal-stats">
+        <div><strong>Answered:</strong> <span id="modalAnsweredCount">0</span>/50</div>
+        <div><strong>Remaining:</strong> <span id="modalRemainingCount">50</span></div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="modalCancelBtn" class="btn-nav btn-secondary" type="button">Continue Quiz</button>
+        <button id="modalConfirmBtn" class="btn-nav btn-primary" type="button">Confirm Submission</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="container">
+      <p>Modes of Communication Interactive MCQ Quiz • 50 Comprehensive Questions</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
