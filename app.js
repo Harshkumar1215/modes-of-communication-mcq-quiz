@@ -39,6 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const correctAnswerLabel = document.getElementById('correctAnswerLabel');
   const explanationText = document.getElementById('explanationText');
 
+  // 10-Second Timer Elements & State
+  const questionTimer = document.getElementById('questionTimer');
+  const timerSeconds = document.getElementById('timerSeconds');
+  const timerProgressCircle = document.getElementById('timerProgressCircle');
+  const timerStatusText = document.getElementById('timerStatusText');
+
+  let timerInterval = null;
+  let timerSecondsLeft = 10;
+  let timerActiveQuestionIndex = -1;
+  const TOTAL_TIMER_SECONDS = 10;
+  const CIRCLE_CIRCUMFERENCE = 263.89; // 2 * Math.PI * 42
+
   // Navigation Buttons
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
@@ -121,6 +133,71 @@ document.addEventListener('DOMContentLoaded', () => {
     answeredStats.textContent = `${answeredCount} of ${TOTAL_QUESTIONS} Answered`;
   }
 
+  // Start or reset 10-second timer for a question
+  function startQuestionTimer(questionIndex) {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    timerActiveQuestionIndex = questionIndex;
+    timerSecondsLeft = TOTAL_TIMER_SECONDS;
+
+    // If answer is revealed for this question, keep timer invisible
+    if (answerRevealed[questionIndex]) {
+      if (questionTimer) questionTimer.classList.add('hidden');
+      return;
+    }
+
+    if (questionTimer) questionTimer.classList.remove('hidden');
+    updateTimerUI();
+
+    timerInterval = setInterval(() => {
+      timerSecondsLeft--;
+      if (timerSecondsLeft <= 0) {
+        timerSecondsLeft = 0;
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      updateTimerUI();
+    }, 1000);
+  }
+
+  // Stop running timer
+  function stopTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  // Update timer display & circular SVG progress ring
+  function updateTimerUI() {
+    if (!questionTimer || !timerSeconds || !timerProgressCircle) return;
+
+    timerSeconds.textContent = timerSecondsLeft;
+
+    // Calculate circular stroke offset (from 0 down to full circumference)
+    const progressFraction = (TOTAL_TIMER_SECONDS - timerSecondsLeft) / TOTAL_TIMER_SECONDS;
+    const offset = progressFraction * CIRCLE_CIRCUMFERENCE;
+    timerProgressCircle.style.strokeDashoffset = offset;
+
+    // Color and status styling based on remaining time
+    timerProgressCircle.classList.remove('warning', 'danger', 'stopped');
+    timerStatusText.classList.remove('time-up');
+
+    if (timerSecondsLeft > 4) {
+      timerStatusText.textContent = "⏱️ Think & Select Option";
+    } else if (timerSecondsLeft > 0) {
+      timerProgressCircle.classList.add('warning');
+      timerStatusText.textContent = "⚡ Hurry up! Select answer";
+    } else {
+      timerProgressCircle.classList.add('danger');
+      timerStatusText.classList.add('time-up');
+      timerStatusText.textContent = "🛑 Time's Up!";
+    }
+  }
+
   // Render Current Question
   function renderQuestion() {
     const currentQ = questionsData[currentIndex];
@@ -161,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="option-radio-dot"></span>
       `;
 
-      // Option Click Handler
+      // Option Click Handler (Selecting option does NOT disturb the countdown)
       optionItem.addEventListener('click', () => {
         selectOption(optIndex);
       });
@@ -177,12 +254,16 @@ document.addEventListener('DOMContentLoaded', () => {
       optionsContainer.appendChild(optionItem);
     });
 
-    // Update Show/Hide Answer button state
+    // Update Show/Hide Answer button state & Timer visibility
     if (isRevealed) {
       showAnswerBtn.classList.add('active');
       showAnswerBtnText.textContent = 'Hide Answer & Explanation';
       explanationContainer.classList.add('active');
       
+      // Clock is invisible when Answer & Explanation is shown
+      if (questionTimer) questionTimer.classList.add('hidden');
+      stopTimer();
+
       const correctOptLetter = optionLetters[currentQ.correctAnswer];
       const correctOptText = currentQ.options[currentQ.correctAnswer];
       correctAnswerLabel.textContent = `Correct Answer: ${correctOptLetter}. ${correctOptText}`;
@@ -191,6 +272,14 @@ document.addEventListener('DOMContentLoaded', () => {
       showAnswerBtn.classList.remove('active');
       showAnswerBtnText.textContent = 'Show Answer & Explanation';
       explanationContainer.classList.remove('active');
+
+      // Clock is visible when Answer & Explanation is not shown
+      if (questionTimer) questionTimer.classList.remove('hidden');
+      
+      // Start 10s timer if this is a newly visited question
+      if (timerActiveQuestionIndex !== currentIndex) {
+        startQuestionTimer(currentIndex);
+      }
     }
 
     // Navigation buttons state
@@ -205,15 +294,25 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePalette();
   }
 
-  // Select an Option
+  // Select an Option (updates choice without restarting timer)
   function selectOption(optIndex) {
     userAnswers[currentIndex] = optIndex;
     renderQuestion();
   }
 
-  // Toggle Answer & Explanation
+  // Toggle Answer & Explanation (hides clock when revealed)
   function toggleAnswer() {
-    answerRevealed[currentIndex] = !answerRevealed[currentIndex];
+    const willBeRevealed = !answerRevealed[currentIndex];
+    answerRevealed[currentIndex] = willBeRevealed;
+
+    if (willBeRevealed) {
+      stopTimer();
+      if (questionTimer) questionTimer.classList.add('hidden');
+    } else {
+      if (questionTimer) questionTimer.classList.remove('hidden');
+      startQuestionTimer(currentIndex);
+    }
+
     renderQuestion();
   }
 
@@ -268,6 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Calculate & Submit Quiz
   function submitQuiz() {
     closeSubmitModal();
+    stopTimer();
     isSubmitted = true;
 
     let correctCount = 0;
@@ -425,7 +525,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Restart Quiz
   function restartQuiz() {
+    stopTimer();
     currentIndex = 0;
+    timerActiveQuestionIndex = -1;
     userAnswers.fill(null);
     answerRevealed.fill(false);
     isSubmitted = false;
